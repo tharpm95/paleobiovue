@@ -1,4 +1,5 @@
 import os
+import re
 import pandas as pd
 from pymongo import MongoClient
 from dotenv import load_dotenv
@@ -16,6 +17,19 @@ def load_taxon_data_to_dataframe(file_path):
         print(f"An error occurred while reading {file_path}: {e}")
         return None
 
+def preprocess_dataframe(df):
+    """Adds a 'dateDiscovered' column by extracting the date from 'scientificNameAuthorship'."""
+    if 'scientificNameAuthorship' in df:
+        # Use a regex pattern to find the first sequence of four digits in 'scientificNameAuthorship'
+        df['dateDiscovered'] = df['scientificNameAuthorship'].apply(
+            lambda x: re.search(r'\b(\d{4})\b', x).group(1) if pd.notnull(x) and re.search(r'\b(\d{4})\b', x) else None
+        )
+    else:
+        df['dateDiscovered'] = None
+        print("'scientificNameAuthorship' column not found in the DataFrame.")
+
+    return df
+
 def insert_dataframe_to_mongo(df, db_name, collection_name, mongo_uri="mongodb://localhost:27018/"):
     """Insert a DataFrame into a MongoDB collection."""
     if df is None:
@@ -31,6 +45,10 @@ def insert_dataframe_to_mongo(df, db_name, collection_name, mongo_uri="mongodb:/
 
         # Access the collection
         collection = db[collection_name]
+
+        # Clear existing data in the collection
+        collection.delete_many({})
+        print(f"Cleared existing records in the '{collection_name}' collection of the '{db_name}' database.")
 
         # Convert DataFrame to a list of dictionaries
         data_dict = df.to_dict("records")
@@ -72,11 +90,15 @@ def main():
     if taxon_part1_df is not None and taxon_part2_df is not None:
         # Concatenate both DataFrames
         combined_df = pd.concat([taxon_part1_df, taxon_part2_df], ignore_index=True)
-        print("Combined Taxon DataFrame:")
-        print(combined_df)
+        
+        # Preprocess the DataFrame to add 'dateDiscovered'
+        processed_df = preprocess_dataframe(combined_df)
 
-        # Insert the combined DataFrame into MongoDB
-        insert_dataframe_to_mongo(combined_df, db_name="taxonDB", collection_name="taxonData")
+        print("Processed Taxon DataFrame:")
+        print(processed_df)
+
+        # Insert the processed DataFrame into MongoDB
+        insert_dataframe_to_mongo(processed_df, db_name="taxonDB", collection_name="taxonData")
     else:
         print("Failed to load one or more DataFrames.")
 
