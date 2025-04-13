@@ -1,0 +1,17 @@
+version: "3.9"
+services:
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27018:27017"
+  
+  vue-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./ui:/app
+    depends_on:
+      - mongo

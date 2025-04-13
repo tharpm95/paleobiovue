@@ -1,0 +1,27 @@
+{
+  "name": "paleobiovue",
+  "version": "1.0.0",
+  "description": "The Paleobiology Database (PBDB) is a valuable public resource developed for the global scientific community, created by the Encyclopedia of Life.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "vue-cli-service build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tharpm95/paleobiovue.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tharpm95/paleobiovue/issues"
+  },
+  "homepage": "https://github.com/tharpm95/paleobiovue#readme",
+  "dependencies": {
+    "@vue/cli-service": "^5.0.0",
+    "vue": "^2.6.0"
+  },
+  "devDependencies": {
+    "vue-template-compiler": "^2.6.0"
+  }
+}

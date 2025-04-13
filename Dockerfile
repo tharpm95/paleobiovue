@@ -1,12 +1,20 @@
-FROM mongo:latest
+# Use the official Node.js image as the base image
+FROM node:latest
 
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy necessary files
-COPY . /app/
+# Copy the package.json and package-lock.json files
+COPY ui/package*.json ./
 
-# Expose the MongoDB port (27017)
-EXPOSE 27018
+# Install the app dependencies
+RUN npm install
 
-# Start the MongoDB server
-CMD ["mongod"]
+# Copy the rest of the application code to the working directory
+COPY ui/ .
+
+# Expose the port the app runs on
+EXPOSE 8080
+
+# Start the Vue app for development
+CMD ["npm", "run", "serve"]
