@@ -4,14 +4,25 @@ services:
     image: mongo:latest
     ports:
       - "27018:27017"
-  
-  vue-app:
+
+  ui:
     build: 
-      context: .
+      context: ./ui
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
     volumes:
       - ./ui:/app
+    depends_on:
+      - api
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./db:/app
     depends_on:
       - mongo
