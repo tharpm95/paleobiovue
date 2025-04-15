@@ -30,7 +30,7 @@ def preprocess_dataframe(df):
 
     return df
 
-def insert_dataframe_to_mongo(df, db_name, collection_name, mongo_uri="mongodb://localhost:27018/"):
+def insert_dataframe_to_mongo(df, db_name, collection_name, mongo_uri = os.getenv("MONGO_URI")):
     """Insert a DataFrame into a MongoDB collection."""
     if df is None:
         print("No data to insert.")

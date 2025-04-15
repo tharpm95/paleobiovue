@@ -5,3 +5,7 @@ The Paleobiology Database (PBDB) is a valuable public resource developed for the
 # Getting Started
 
 When you first download the data from the Paleobiology Database, you will need to retain only the file named `taxon.tab` for this project. This file contains the primary taxonomic data essential for your research or analysis. To manage this data effectively, you can run the script `split_taxon.py` to divide the original `taxon.tab` file into more manageable parts. Alternatively, you can directly use the already split version that includes `Version v710.5281/zenodo.14829528` with files `taxon_part1.tab` and `taxon_part2.tab`, which are part of the repository.
+
+# Additional Notes 
+
+By default, vue-cli-service configures the server to use HTTP, as generating and managing SSL certificates for HTTPS on local development setups can add unnecessary complexity.

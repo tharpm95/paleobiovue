@@ -4,17 +4,19 @@ FROM python:3.9
 # Set the working directory in the container
 WORKDIR /app
 
-# Copy the necessary files for the API
-COPY db/requirements.txt ./
+# Copy the requirements file and install dependencies
+COPY db/requirements.txt /app/
 
-# Install API dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the application code to the working directory
-COPY /db/ .
+# Copy the application code to the working directory
+COPY db/ /app/
+
+# Copy the new app.py file
+COPY app.py /app/
 
 # Expose the API's port
 EXPOSE 5000
 
-# Command to run your API app
-CMD ["python", "db/insert_taxon.py"]
+# Command to run Flask
+CMD ["python", "app.py"]
