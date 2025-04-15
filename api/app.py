@@ -2,31 +2,39 @@ from flask import Flask, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
 import os
+import subprocess
+import sys
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
+# Append the full path to the `db` directory inside the container
+sys.path.append('/app/db')
+
 def load_initial_data():
-    """Function to run insert_taxon logic at server start."""
-    from db.insert_taxon import main
-    main()
+    """Function to directly access the file inside `/app/db`."""
+    try:
+        from insert_taxon import main
+        main()
+    except ModuleNotFoundError as e:
+        print("Error loading the `insert_taxon` module:", e)
 
 @app.route('/')
 def home():
     return "API is running!"
 
-@app.route('/data')
+@app.route('/data', methods=['GET'])
 def get_data():
     try:
-        mongo_uri = os.getenv("MONGO_URI", "mongodb://mongo:27017/")
-        client = MongoClient(mongo_uri)
-        db = client['taxonDB']
-        collection = db['taxonData']
+        # Call the Node.js script
+        result = subprocess.run(['node', 'api/index.js'], capture_output=True, text=True)
+        if result.returncode != 0:
+            return jsonify({"error": result.stderr}), 500
 
-        # Fetch data from MongoDB
-        data = list(collection.find({}, {'_id': 0}))  # Project out MongoDB IDs, return all other fields
+        # Parse and return the output from the Node.js script
+        data = result.stdout
 
-        return jsonify(data)
+        return jsonify({"data": data})  # or parse JSON if needed
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

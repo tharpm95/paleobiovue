@@ -14,9 +14,10 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./api:/app
+      - ./api/data:/app/data  # Ensure taxon data is mounted correctly
     environment:
       - MONGO_URI=mongodb://mongo:27017/taxonDB
+      - MAIN_DIR=/app
     depends_on:
       - mongo
 
@@ -29,7 +30,7 @@ services:
     volumes:
       - ./ui:/app
     environment:
-      - VUE_APP_API_URL=http://localhost:5000
+      - VUE_APP_API_URL=http://api:5000
     depends_on:
       - api
 
