@@ -9,6 +9,7 @@ const port = 3000; // Changed to a different port from Flask
 const uri = process.env.MONGO_URI || 'mongodb://mongo:27017';
 
 async function main() {
+  console.log('Connecting to MongoDB...');
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
   try {
