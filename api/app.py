@@ -23,7 +23,6 @@ def home():
 
 @app.route('/data', methods=['GET'])
 def get_data():
-    print('hello')
     try:
         # Call the Node.js script
         result = subprocess.run(['node', 'index.js'], capture_output=True, text=True)
@@ -38,10 +37,4 @@ def get_data():
 
 if __name__ == '__main__':
     load_initial_data()  # Run the data loading script before starting the server
-    with app.app_context():
-        # Call get_data within application context
-        response_from_endpoint, status_code = get_data()
-        # Extract JSON data from response
-        response_data = response_from_endpoint.get_json()
-        print(response_data)
     app.run(host='0.0.0.0', port=5000)

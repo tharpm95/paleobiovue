@@ -12,53 +12,53 @@ async function main() {
   console.log('Connecting to MongoDB...');
   const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 
-  try {
-    await client.connect();
-    console.log('Connected to MongoDB');
+  // try {
+  //   await client.connect();
+  //   console.log('Connected to MongoDB');
 
-    // Endpoint for data processing
-    app.get('/processed-data', async (req, res) => {
-      try {
-        const database = client.db('taxonDB');
-        const collection = database.collection('taxonData');
+  //   // Endpoint for data processing
+  //   app.get('/processed-data', async (req, res) => {
+  //     try {
+  //       const database = client.db('taxonDB');
+  //       const collection = database.collection('taxonData');
         
-        // Retrieve only the dateDiscovered field from the collection
-        const data = await collection.find({}, { projection: { _id: 0, dateDiscovered: 1 } }).limit(100).toArray();
+  //       // Retrieve only the dateDiscovered field from the collection
+  //       const data = await collection.find({}, { projection: { _id: 0, dateDiscovered: 1 } }).limit(100).toArray();
         
-        // Process the data to form a histogram
-        const validDates = data
-          .map(entry => entry.dateDiscovered)
-          .filter(date => date !== null && !isNaN(date));
+  //       // Process the data to form a histogram
+  //       const validDates = data
+  //         .map(entry => entry.dateDiscovered)
+  //         .filter(date => date !== null && !isNaN(date));
 
-        const histogram = createHistogram(validDates);
+  //       const histogram = createHistogram(validDates);
         
-        // Sending the histogram data as JSON
-        res.json(histogram);
-      } catch (err) {
-        console.error('Error processing data:', err);
-        res.status(500).json({ error: 'Internal server error' });
-      }
-    });
+  //       // Sending the histogram data as JSON
+  //       res.json(histogram);
+  //     } catch (err) {
+  //       console.error('Error processing data:', err);
+  //       res.status(500).json({ error: 'Internal server error' });
+  //     }
+  //   });
 
-    // Function to create a histogram from the date data
-    function createHistogram(data) {
-      const frequency = {};
+  //   // Function to create a histogram from the date data
+  //   function createHistogram(data) {
+  //     const frequency = {};
 
-      data.forEach(date => {
-        if (frequency[date]) {
-          frequency[date]++;
-        } else {
-          frequency[date] = 1;
-        }
-      });
+  //     data.forEach(date => {
+  //       if (frequency[date]) {
+  //         frequency[date]++;
+  //       } else {
+  //         frequency[date] = 1;
+  //       }
+  //     });
 
-      return frequency;
-    }
+  //     return frequency;
+  //   }
 
-  } catch (err) {
-    console.error('Failed to connect to MongoDB', err);
-    process.exit(1);
-  }
+  // } catch (err) {
+  //   console.error('Failed to connect to MongoDB', err);
+  //   process.exit(1);
+  // }
 }
 
 main().catch(console.error);
