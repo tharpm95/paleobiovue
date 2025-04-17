@@ -4,9 +4,14 @@ services:
     image: mongo:latest
     ports:
       - "27018:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=example
+      - MONGO_INITDB_DATABASE=taxonDB
     volumes:
+      - ./api/db/init_mongo.js:/docker-entrypoint-initdb.d/init_mongo.js
       - mongo-data:/data/db
-
+      
   api:
     build:
       context: ./api
@@ -16,7 +21,7 @@ services:
     volumes:
       - ./api/data:/app/data  # Ensure taxon data is mounted correctly
     environment:
-      - MONGO_URI=mongodb://mongo:27017/taxonDB
+      - MONGO_URI=mongodb://admin:example@mongo:27017/taxonDB?authSource=admin
       - MAIN_DIR=/app
     depends_on:
       - mongo

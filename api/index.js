@@ -6,13 +6,24 @@ const app = express();
 const port = 3000; // Changed to a different port from Flask
 
 // MongoDB URI from your Docker compose environment variable
-const uri = process.env.MONGO_URI || 'mongodb://mongo:27017';
+const uri = process.env.MONGO_URI;
+// const uri = 'mongodb://mongo:27017/taxonDB'
 
 async function main() {
   console.log('Connecting to MongoDB...');
-  const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  console.log(uri)
+  // const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+  // await client.connect();
+  // console.log('Connected to MongoDB');
+}
 
-  // try {
+main().catch(console.error);
+
+app.listen(port, () => {
+  console.log(`Node.js API is running on http://localhost:${port}`);
+});
+
+// try {
   //   await client.connect();
   //   console.log('Connected to MongoDB');
 
@@ -59,10 +70,3 @@ async function main() {
   //   console.error('Failed to connect to MongoDB', err);
   //   process.exit(1);
   // }
-}
-
-main().catch(console.error);
-
-app.listen(port, () => {
-  console.log(`Node.js API is running on http://localhost:${port}`);
-});
