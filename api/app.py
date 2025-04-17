@@ -1,10 +1,15 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-import subprocess
+import os
+from pymongo import MongoClient
+from dotenv import load_dotenv
 import sys
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
+
+# Load environment variables
+load_dotenv()
 
 # Append the full path to the `db` directory inside the container
 sys.path.append('/app/db')
@@ -17,6 +22,25 @@ def load_initial_data():
     except ModuleNotFoundError as e:
         print("Error loading the `insert_taxon` module:", e)
 
+def get_mongo_data():
+    """Connects to MongoDB and retrieves data from the specified collection."""
+    try:
+        # Retrieve the MongoDB URI from environment variables
+        mongo_uri = os.getenv('MONGO_URI')
+        
+        # Create a MongoDB client and connect to the specified database
+        client = MongoClient(mongo_uri)
+        db = client['taxonDB']  # Use your database name
+        collection = db['taxonData']  # Use your collection name
+
+        # Fetch data from the collection with specific projection and limit of 100 entries
+        data = list(collection.find({}, {"_id": 0, "dateDiscovered": 1}).limit(100))
+        return data
+
+    except Exception as e:
+        print(f"Error fetching data from MongoDB: {e}")
+        return None
+
 @app.route('/')
 def home():
     return "API is running!"
@@ -24,14 +48,13 @@ def home():
 @app.route('/data', methods=['GET'])
 def get_data():
     try:
-        # Call the Node.js script
-        result = subprocess.run(['node', 'index.js'], capture_output=True, text=True)
-        if result.returncode != 0:
-            return jsonify({"error": result.stderr}), 500
-
-        # Parse and return the output from the Node.js script
-        data = result.stdout.strip()  # Strip any extraneous newlines or spaces
-        return jsonify({"data": data})
+        # Fetch data from MongoDB
+        data = get_mongo_data()
+        if data is None:
+            return jsonify({"error": "Failed to retrieve data"}), 500
+        
+        # Return the data as JSON
+        return jsonify(data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

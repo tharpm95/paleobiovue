@@ -20,7 +20,6 @@ RUN python3 -m pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY db/ /app/
 COPY app.py /app/
-COPY index.js /app/
 
 # Expose the necessary ports
 EXPOSE 5000
