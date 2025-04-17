@@ -1,15 +1,14 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <TimelineDisplay/>
 </template>
 
 <script>
-import HelloWorld from './components/TimelineDisplay.vue'
+import TimelineDisplay from './components/TimelineDisplay.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    TimelineDisplay
   }
 }
 </script>
@@ -20,7 +19,7 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: #0000FF;
   margin-top: 60px;
 }
 </style>

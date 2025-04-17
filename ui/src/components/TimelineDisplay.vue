@@ -1,5 +1,63 @@
 <template>
   <div>
+    <!-- Conditionally render the chart only if dataLoaded is true -->
+    <Bar
+      v-if="dataLoaded"
+      id="my-chart-id"
+      :options="chartOptions"
+      :data="chartData"
+    />
+    <!-- Optionally, display a loading message while fetching data -->
+    <p v-else>Loading chart data...</p>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'; // Make sure to import axios
+import { Bar } from 'vue-chartjs'
+import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+
+ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+
+export default {
+  name: 'BarChart',
+  components: { Bar },
+  data() {
+    return {
+      chartData: {
+        labels: [],
+        datasets: [{ data: [] }]
+      },
+      chartOptions: {
+        responsive: true
+      },
+      dataLoaded: false // Flag to check if data is loaded
+    }
+  },
+  methods: {
+    fetchData() {
+      axios.get(process.env.VUE_APP_API_URL + '/data')
+        .then(response => {
+          console.log('API response received:', response.data);
+          const items = response.data;
+          this.chartData.labels = Object.keys(items);
+          this.chartData.datasets[0].data = Object.values(items);
+          console.log('Chart data updated with API data:', this.chartData);
+          this.dataLoaded = true; // Set the flag to true to display the chart
+        })
+        .catch(error => {
+          console.error('There was an error fetching the data:', error);
+        });
+    }
+  },
+  mounted() {
+    this.fetchData(); // Fetch data when the component is mounted
+  }
+}
+</script>
+
+<!-- <template>
+  <div>
     <h1>Data from API - Histogram Timeline</h1>
     <LineChart :chartData="chartData" :chartOptions="chartOptions" />
   </div>
@@ -105,4 +163,4 @@ export default defineComponent({
     }
   }
 });
-</script>
+</script> -->
