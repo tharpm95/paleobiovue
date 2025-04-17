@@ -1,5 +1,6 @@
 <template>
   <div>
+    Timeline of Paleobiological Discoveries (Year vs. Number of Discoveries)
     <!-- Conditionally render the chart only if dataLoaded is true -->
     <Bar
       v-if="dataLoaded"
@@ -15,9 +16,9 @@
 <script>
 import axios from 'axios'; // Make sure to import axios
 import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js'
+import { Chart as ChartJS, Title, Tooltip, BarElement, CategoryScale, LinearScale } from 'chart.js'
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale)
+ChartJS.register(Title, Tooltip, BarElement, CategoryScale, LinearScale)
 
 export default {
   name: 'BarChart',
@@ -26,7 +27,9 @@ export default {
     return {
       chartData: {
         labels: [],
-        datasets: [{ data: [] }]
+        datasets: [{ 
+          backgroundColor: '#f87979',
+          data: [] }]
       },
       chartOptions: {
         responsive: true
