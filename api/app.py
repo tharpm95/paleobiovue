@@ -4,6 +4,7 @@ import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import sys
+from collections import Counter
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -23,7 +24,7 @@ def load_initial_data():
         print("Error loading the `insert_taxon` module:", e)
 
 def get_mongo_data():
-    """Connects to MongoDB and retrieves data from the specified collection."""
+    """Connects to MongoDB, retrieves and processes data counts for histogram."""
     try:
         # Retrieve the MongoDB URI from environment variables
         mongo_uri = os.getenv('MONGO_URI')
@@ -33,9 +34,14 @@ def get_mongo_data():
         db = client['taxonDB']  # Use your database name
         collection = db['taxonData']  # Use your collection name
 
-        # Fetch data from the collection with specific projection and limit of 100 entries
-        data = list(collection.find({}, {"_id": 0, "dateDiscovered": 1}).limit(100))
-        return data
+        # Fetch data from the collection
+        data = collection.find({}, {"_id": 0, "dateDiscovered": 1})
+        
+        # Count occurrences of each `dateDiscovered`, ignoring null values
+        year_counter = Counter(record["dateDiscovered"] for record in data if record["dateDiscovered"] is not None)
+        
+        # Convert Counter object to dictionary
+        return dict(year_counter)
 
     except Exception as e:
         print(f"Error fetching data from MongoDB: {e}")
@@ -48,7 +54,7 @@ def home():
 @app.route('/data', methods=['GET'])
 def get_data():
     try:
-        # Fetch data from MongoDB
+        # Fetch and process data from MongoDB for histogram
         data = get_mongo_data()
         if data is None:
             return jsonify({"error": "Failed to retrieve data"}), 500
